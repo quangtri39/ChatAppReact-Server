@@ -1,14 +1,14 @@
-const httpServer = require("http").createServer();
-const express = require('express');
+const app = require('express')();
+const httpServer = require('http').Server(app);
 const io = require("socket.io")(httpServer, {
   cors: { origin: "*"}
 });
+
 const {addUser, removeUser, getUser, getUsersInRoom} = require('./user.js')
 const cors = require('cors');
 const router = require('./router');
 
 
-const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 5000
@@ -32,7 +32,7 @@ io.on("connection", (socket) => {
         callback()
     })
     socket.on('sendMessage', (message, callback)=>{
-        const user = getUser(socket.id)
+        const user = getUser(socket.id) 
         if(!user){
             return callback('Đã có người đăng nhập tài khoản này rồi')
         }
