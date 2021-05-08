@@ -21,11 +21,7 @@ io.on("connection", (socket) => {
         }
         socket.emit('message', {user: 'admin', text: `Bạn đã vào room ${user.room}!`})
         socket.broadcast.to(user.room).emit('message', {user: 'admin', text: `${user.name} đã vào room!`}) 
-
-        //gui cho moi nguoi va nguoi dung thong tin nhung nguoi o trong phong
-        socket.emit('usersInRoom', {users: getUsersInRoom(user.room)})
-        io.to(user.room).emit('usersInRoom', {users: getUsersInRoom(user.room)})
-
+        
         socket.join(user.room);
 
         io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
@@ -37,14 +33,11 @@ io.on("connection", (socket) => {
             return callback('Đã có người đăng nhập tài khoản này rồi')
         }
         io.to(user.room).emit('message', {user: user.name, text: message})
-        io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
-
         callback()
     })
     socket.on('disconnect', ()=>{
         const user = removeUser(socket.id)
         if(user){
-            socket.emit('usersInRoom', {users: getUsersInRoom(user.room)})
             io.to(user.room).emit('message', {user: 'admin', text: `${user.name} đã thoát`})
             io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)})
         }
